@@ -1,5 +1,7 @@
 // 修改这个列表，更新为自己的 domain list
 const ALLOWED = new Set([
+  'cqzrs.site',
+  'cqzrs.top'
   'cdn.cqzrs.site',
   'eo-oss.cqzrs.top',
   'blog.cqzrs.top'
