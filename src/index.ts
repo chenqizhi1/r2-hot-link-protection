@@ -2,6 +2,7 @@
 const ALLOWED = new Set([
   'eo-oss.cqzrs.top',
   'blog.cqzrs.top',
+  'bradm.ax'
 ]);
 const CORP    = 'same-site';     // same-origin 也行
 const BUCKET  = 'MEDIA';         // 对应 wrangler 的 r2_buckets 绑定名
