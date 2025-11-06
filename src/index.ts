@@ -17,9 +17,9 @@ export default {
     // 新增：允许 Obsidian / 无 Referer 请求
     const userAgent = request.headers.get('User-Agent') || '';
     const isObsidian = userAgent.includes('Obsidian');
-    const noReferer  = !refererHeader;
+    // const noReferer  = !refererHeader;
 
-    if (!ALLOWED.has(refererHost) && !isObsidian && !noReferer) {
+    if (!ALLOWED.has(refererHost) && !isObsidian) {
       return new Response('blocked', { status: 403 });
     }
 
