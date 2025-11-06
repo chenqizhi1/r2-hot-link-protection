@@ -14,16 +14,21 @@ export default {
     const refererHost   = refererHeader ? new URL(refererHeader).hostname : '';
     const refererOrigin = refererHeader ? new URL(refererHeader).origin   : '';
 
-    if (!ALLOWED.has(refererHost)) {
+    // 新增：允许 Obsidian / 无 Referer 请求
+    const userAgent = request.headers.get('User-Agent') || '';
+    const isObsidian = userAgent.includes('Obsidian');
+    const noReferer  = !refererHeader;
+
+    if (!ALLOWED.has(refererHost) && !isObsidian && !noReferer) {
       return new Response('blocked', { status: 403 });
     }
 
-    /* 0-bis. 预检请求（极少数场景，但写上更完整） */
+    /* 0-bis. 预检请求 */
     if (request.method === 'OPTIONS') {
       return new Response(null, {
         status: 204,
         headers: {
-          'Access-Control-Allow-Origin':  refererOrigin,
+          'Access-Control-Allow-Origin':  refererOrigin || '*',
           'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
           'Access-Control-Allow-Headers': 'Range',
           'Access-Control-Max-Age':       '86400'
@@ -53,9 +58,8 @@ export default {
 
     /* 4. 生成响应 + CORS/CORP 头 */
     const h = new Headers(obj.httpMetadata);
-    // h.set('Cross-Origin-Resource-Policy', CORP); // 如果 worker 与目标域名在同一个根域名下，可以考虑打开
-    h.set('Access-Control-Allow-Origin',  refererOrigin);
-    h.set('Vary',                         'Origin');          // 避免缓存污染
+    h.set('Access-Control-Allow-Origin',  refererOrigin || '*');
+    h.set('Vary',                         'Origin');
     h.set('Access-Control-Expose-Headers','Content-Length, Content-Range, Accept-Ranges');
 
     if (range && opts?.range) {
@@ -70,4 +74,3 @@ export default {
     return new Response(obj.body, { headers: h });
   }
 }
-
